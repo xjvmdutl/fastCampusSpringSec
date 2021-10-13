@@ -1,6 +1,7 @@
 package com.sp.fc.web.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(prePostEnabled = true)//지금부터 prePost로 권한체크
+@Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //사용자 추가를 여기서 가능하다.
     @Override
@@ -44,10 +46,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin();
         http.httpBasic();
         * */
+        /*
         http.authorizeRequests((requests) ->
                 requests.antMatchers("/").permitAll()
                     .anyRequest().authenticated());
         http.formLogin();
         http.httpBasic();
+         */
+        //http.antMatcher("/api/**");//Api 밑으로 오는 Chain
+        //만약 URL의 Filter가 여러개일경우에는 어떻게 하나
+        //또다른 Filter를 만든 후 @Order 어노테이션으로 순서를 결정해 주면 된다.
+        //순서가 매우 중요
+        /*
+        http
+                .headers().disable()
+                .csrf().disable()
+                .logout().disable()
+                .requestCache().disable()
+                ;
+
+        //사용하지 않을 Filter를 disable로 사용하지 않을수가 있다.
+         */
+        http.antMatcher("/api/**");
     }
 }
